@@ -29,7 +29,7 @@ def extract_text_from_pdf(filepath):
     raw_text = "\n".join(page.get_text() for page in doc)
     return clean_text(raw_text)
 
-#ekstrak teks dari pdf
+#ekstrak teks dari pptx
 def extract_text_from_pptx(filepath):
     prs = Presentation(filepath)
     text = ""
@@ -39,6 +39,7 @@ def extract_text_from_pptx(filepath):
                 text += shape.text + "\n"
     return clean_text(text)
 
+#pecah teks jadi beberapa chunk
 def chunk_text(text, max_words=200, overlap=50):
     words = text.split()
     chunks = []
@@ -50,6 +51,7 @@ def chunk_text(text, max_words=200, overlap=50):
         i += max_words - overlap
     return chunks
 
+#ringkas dari chunk
 def summarize_chunk(chunk_text, max_output=150):
     input_text = "Hasil Ringkasan: " + chunk_text
     inputs = tokenizer.encode(input_text, return_tensors="pt", truncation=True, max_length=512)
@@ -64,12 +66,14 @@ def summarize_chunk(chunk_text, max_output=150):
         )
     return tokenizer.decode(summary_ids[0], skip_special_tokens=True)
 
+#ringkas teksnya
 def summarize_text(text, max_output=150):
    chunks = chunk_text(text)
    summaries = [summarize_chunk(chunk, max_output=max_output) for chunk in chunks]
    final_summary = " ".join(summaries)
    return final_summary
 
+#convert teks ke audio
 def text_to_audio(text, output_path):
     tts = gTTS(text, lang='id')
     tts.save(output_path)
@@ -83,12 +87,14 @@ def upload():
     uploaded_file = request.files['file']
     output_name = request.form.get('output_name', 'ringkasan_audio').strip()
     output_name = "".join(c for c in output_name if c.isalnum() or c in (' ', '_', '-')).rstrip()
+    #ambil nama file
     filename = uploaded_file.filename
 
+    #dicek dulu kalo filenya bener baru disimpen filenya
     if not uploaded_file or not filename.endswith(('.pdf', '.pptx')):
         return "Format file tidak didukung.", 400
 
-    # Simpan file sementara
+    # Simpan file ke folder pake nama asli yang udah diambil
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     uploaded_file.save(filepath)
 
