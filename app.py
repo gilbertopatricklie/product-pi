@@ -51,6 +51,17 @@ def chunk_text(text, max_words=200, overlap=50):
         i += max_words - overlap
     return chunks
 
+# def chunk_text(text, tokenizer, max_tokens=450, overlap=50):
+#     tokens = tokenizer.encode(text, add_special_tokens=False)
+#     chunks = []
+#     i = 0
+#     while i < len(tokens):
+#         chunk = tokens[i:i + max_tokens]
+#         chunk_text = tokenizer.decode(chunk, skip_special_tokens=True)
+#         chunks.append(chunk_text)
+#         i += max_tokens - overlap
+#     return chunks
+
 #ringkas dari chunk
 def summarize_chunk(chunk_text, max_output=150):
     input_text = "Hasil Ringkasan: " + chunk_text
@@ -72,6 +83,12 @@ def summarize_text(text, max_output=150):
    summaries = [summarize_chunk(chunk, max_output=max_output) for chunk in chunks]
    final_summary = " ".join(summaries)
    return final_summary
+
+# def summarize_text(text, max_output=150):
+#     chunks = chunk_text(text, tokenizer)
+#     summaries = [summarize_chunk(chunk, max_output=max_output) for chunk in chunks]
+#     final_summary = " ".join(summaries)
+#     return final_summary
 
 #convert teks ke audio
 def text_to_audio(text, output_path):
